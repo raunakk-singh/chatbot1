@@ -44,7 +44,7 @@ function ChatInput({chatMessages,setChatMessages}){
     }
   }
   return(
-  <>
+  <div className="flex items-center justify-center gap-2">
     <input type="text" 
     placeholder="Send a message to the Chatbot" 
     size="30"
@@ -55,9 +55,9 @@ function ChatInput({chatMessages,setChatMessages}){
     
     />  
 
-    <Button onClick={sendMessage} className="text-white bg-green-500 font-semibold p-2 ml-2 rounded-sm">Send</Button>
+    <Button onClick={sendMessage} className="rounded-sm bg-green-500 p-2 font-semibold text-white">Send</Button>
     
-    </>);
+    </div>);
 }
 
 
@@ -66,22 +66,44 @@ function Button({ children,onClick,className }) {
 }
 
 function ChatMessage({message,sender}){
+  const isBot = sender === 'bot';
+
   return (
-        <div className="mb-2 flex items-center gap-2">
-          {sender==='bot' && 
+        <div className={`mb-3 flex items-end gap-3 ${isBot ? 'justify-start' : 'justify-end'}`}>
+          {isBot && 
           (<img src="src/img/bot.png" alt="" width={50}/>)  }
-          <span className="rounded-md bg-zinc-300 px-3 py-2">{message}</span>
-         {sender==='user' && 
+          <span
+            className={`inline-block max-w-[320px] rounded-2xl px-4 py-3 text-sm leading-6 shadow-sm ${
+              isBot ? 'bg-zinc-200 text-zinc-900' : 'bg-green-600 text-white'
+            }`}
+          >
+            {message}
+          </span>
+         {!isBot && 
          (<img src="src/img/user.png" alt="" width={50}/>)}
     </div>
     );
   }
 
  function ChatMessages({chatMessages}){
+  const messagesContainerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const container = messagesContainerRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    container.scrollTop = container.scrollHeight;
+  }, [chatMessages]);
 
 
   return(
-    <>
+    <div
+      ref={messagesContainerRef}
+      className="scrollbar-hidden mb-4 flex h-[420px] w-full flex-col overflow-y-auto pr-2"
+    >
     
     {chatMessages.map((msg)=>{
         return(
@@ -92,7 +114,7 @@ function ChatMessage({message,sender}){
           />
         )
       })}
-      </>
+      </div>
   );
 
 }
@@ -107,7 +129,7 @@ export default function App(){
 
   return(
     <div className="flex min-h-screen items-center justify-center">
-      <div>
+      <div className="w-full max-w-2xl rounded-2xl border border-zinc-200 bg-white p-6 shadow-lg">
         <ChatMessages
         chatMessages={chatMessages}
         />
